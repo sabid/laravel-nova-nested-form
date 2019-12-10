@@ -4,7 +4,7 @@
       <template v-if="field.children.length > 0">
         <card
           :class="{ 'overflow-hidden': field.panel && !index }"
-          :key="childIndex"
+          :key="child.id || child.key"
           v-for="(child, childIndex) in field.children"
         >
           <nested-form-header
@@ -153,7 +153,7 @@ export default {
           if (typeof is !== 'undefined') {
             shouldDisplay.push(values.every(v => v === is))
           } else if (typeof isNot !== 'undefined') {
-            shouldDisplay.push(values.every(v => v !== is))
+            shouldDisplay.push(values.every(v => v !== isNot))
           } else if (isNotNull) {
             shouldDisplay.push(values.every(v => Boolean(v)))
           } else if (isNull) {

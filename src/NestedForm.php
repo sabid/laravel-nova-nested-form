@@ -2,6 +2,7 @@
 
 namespace Yassi\NestedForm;
 
+use function GuzzleHttp\json_encode;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -20,9 +21,8 @@ use Laravel\Nova\Http\Requests\DetachResourceRequest;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Http\Requests\UpdateResourceRequest;
 use Laravel\Nova\Nova;
-use Laravel\Nova\Panel;
 
-use function GuzzleHttp\json_encode;
+use Laravel\Nova\Panel;
 
 class NestedForm extends Field
 {
@@ -248,7 +248,7 @@ class NestedForm extends Field
      * 
      * @param boolean $opened
      */
-    public function open(boolean $opened)
+    public function open(bool $opened)
     {
         $this->opened = $opened;
 
@@ -318,7 +318,7 @@ class NestedForm extends Field
      */
     protected function isManyRelationsip()
     {
-        return str_contains($this->getRelationshipType(), 'Many');
+        return Str::contains($this->getRelationshipType(), 'Many');
     }
 
     /**
@@ -478,7 +478,7 @@ class NestedForm extends Field
      */
     protected function getCreateRequest(NovaRequest $request, $model, $child, $index, $requestAttribute, $relatedKeys)
     {
-        $request = CreateResourceRequest::createFrom($request->replace([
+        $createRequest = CreateResourceRequest::createFrom($request->replace([
             'viaResource' => $this->viaResource,
             'viaResourceId' => $model->id,
             'viaRelationship' => $this->viaRelationship
@@ -486,9 +486,9 @@ class NestedForm extends Field
             return $value === self::ID ? $model->id : $value;
         })->toArray()));
 
-        $request->files = collect($request->file($requestAttribute . '.' . $index));
+        $createRequest->files = collect($request->file($requestAttribute . '.' . $index));
 
-        return $request;
+        return $createRequest;
     }
 
     /**
